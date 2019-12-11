@@ -2,7 +2,7 @@
 /**
  * unit-curl:/index.php
  *
- * @creation  2018-07-02
+ * @created   2018-07-02
  * @version   1.0
  * @package   unit-curl
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>

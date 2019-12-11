@@ -2,7 +2,7 @@
 /**
  * unit-curl:/Curl.class.php
  *
- * @creation  2017-06-01
+ * @created   2017-06-01
  * @version   1.0
  * @package   app-skeleton
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
@@ -11,7 +11,7 @@
 
 /** namespace
  *
- * @creation  2018-07-02
+ * @created   2018-07-02
  */
 namespace OP\UNIT;
 
@@ -26,7 +26,7 @@ use function OP\ConvertURL;
 
 /** Curl
  *
- * @creation  2017-06-01
+ * @created   2017-06-01
  * @version   1.0
  * @package   app-skeleton
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
