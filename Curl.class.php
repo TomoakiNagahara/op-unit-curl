@@ -15,6 +15,15 @@
  */
 namespace OP\UNIT;
 
+/** Used class
+ *
+ */
+use OP\OP_CORE;
+use OP\OP_UNIT;
+use OP\OP_DEBUG;
+use OP\IF_UNIT;
+use function OP\ConvertURL;
+
 /** Curl
  *
  * @creation  2017-06-01
@@ -23,12 +32,12 @@ namespace OP\UNIT;
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
-class Curl
+class Curl implements IF_UNIT
 {
 	/** trait.
 	 *
 	 */
-	use \OP_CORE;
+	use OP_CORE, OP_UNIT, OP_DEBUG;
 
 	/** Convert to string from array at post data.
 	 *
@@ -45,11 +54,13 @@ class Curl
 
 			default:
 				//	Content-Type: application/x-www-form-urlencoded
+				/*
 				$temp = [];
 				foreach( $post as $key => $val ){
 					$temp[$key] = self::Escape($val);
 				}
-				$data = http_build_query($temp, null, '&');
+				*/
+				$data = http_build_query($post, null, '&');
 		}
 
 		//	...
@@ -58,24 +69,71 @@ class Curl
 
 	/** Execute to Curl.
 	 *
-	 * @param  string $url
-	 * @param  array  $post
-	 * @return string $body
+	 * @param  string  $url
+	 * @param  array   $post
+	 * @param  string  $format
+	 * @param  string  $ua
+	 * @param  string  $referer
+	 * @param  boolean $ssl
+	 * @return string  $body
 	 */
-	static private function _Execute($url, $post=null, $format=null)
+	static private function _Execute($url, $post=null, $format=null, $ua=null, $referer=true, $ssl=null)
 	{
 		//	...
+		if( strpos($url, 'https://') === 0 ){
+			self::__DebugSet('php', 'openssl.cafile='.ini_get('openssl.cafile'));
+		};
+
+		//	Content Type
+		switch( $format ){
+			default:
+				$content_type = 'application/x-www-form-urlencoded';
+		};
+
+		//	...
+		if( $referer === true ){
+			$scheme = empty($_SERVER['HTTPS']) ? 'http': 'https';
+			$host   = $_SERVER['HTTP_HOST']   ?? 'localhost';
+			$uri    = $_SERVER['REQUEST_URI'];
+			//	list($uri, $query) = explode('?', $uri.'?');
+			$referer= "{$scheme}://{$host}{$uri}";
+		};
+
+		//	...
+		$data = $post ? self::_Data($post, $format): null;
+
+		//	...
 		$header = [];
+		$header[] = "Content-Type: {$content_type}";
+		$header[] = "Content-Length: ".strlen($data);
+		$header[] = "Referer: $referer";
 
-		//	...
-		$ua = null;
+		//	Check if installed PHP CURL.
+		if(!defined('CURLOPT_URL') ){
+			//	...
+			D('PHP CURL is not installed.');
 
-		//	...
-		$scheme = 'http';
-		$host   = $_SERVER['HTTP_HOST']   ?? 'localhost';
-		$uri    = $_SERVER['REQUEST_URI'];
-	//	list($uri, $query) = explode('?', $uri.'?');
-		$referer = "{$scheme}://{$host}{$uri}";
+			//	...
+			if( $post ){
+				//	...
+				$context = stream_context_create([
+					'http' => [
+						'method'  => 'POST',
+						'header'  =>  implode("\r\n", $header),
+						'content' => $data
+					],
+					/*
+					'ssl' => [
+						'verify_peer'      => false,
+						'verify_peer_name' => false,
+					],
+					*/
+				]);
+			};
+
+			//	...
+			return file_get_contents($url, false, ($context ?? null));
+		};
 
 		//	...
 		$option = [
@@ -95,7 +153,7 @@ class Curl
 		if( $post ){
 			curl_setopt( $curl, CURLOPT_CUSTOMREQUEST , 'POST' );
 			curl_setopt( $curl, CURLOPT_POST          ,  true  );
-			curl_setopt( $curl, CURLOPT_POSTFIELDS    ,  self::_Data($post, $format) );
+			curl_setopt( $curl, CURLOPT_POSTFIELDS    ,  $data );
 		}
 
 		//	...
@@ -155,10 +213,11 @@ class Curl
 	 *
 	 * @param  string $url
 	 * @param  array  $post
+	 * @param  string $format
 	 * @return string $body
 	 */
-	static function Post($url, $post=null)
+	static function Post($url, $post=null, $format=null)
 	{
-		return self::_Execute($url, $post);
+		return self::_Execute($url, $post, $format);
 	}
 }
