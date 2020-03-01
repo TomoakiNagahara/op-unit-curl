@@ -24,6 +24,7 @@ use OP\OP_DEBUG;
 use OP\IF_UNIT;
 use OP\UNIT\CURL\File;
 use function OP\ConvertURL;
+use function OP\UNIT\CURL\GetReferer;
 
 /** Curl
  *
@@ -147,14 +148,11 @@ class Curl implements IF_UNIT
 				$content_type = 'application/x-www-form-urlencoded';
 		};
 
-		//	...
-		if( $referer === null ){
-			$scheme = empty($_SERVER['HTTPS']) ? 'http': 'https';
-			$host   = $_SERVER['HTTP_HOST']   ?? 'localhost';
-			$uri    = $_SERVER['REQUEST_URI'] ?? '/';
-			$uri    = explode('?', $uri)[0]; // Remove url query.
-			$referer= "{$scheme}://{$host}{$uri}";
-		};
+		//	Get referer at current app uri.
+		if( $referer === true ){
+			require_once(__DIR__.'/function/GetReferer.php');
+			$referer = GetReferer();
+		}
 
 		//	...
 		$data = $post ? self::_Data($post, $format): null;
@@ -163,7 +161,12 @@ class Curl implements IF_UNIT
 		$header = [];
 		$header[] = "Content-Type: {$content_type}";
 		$header[] = "Content-Length: ".strlen($data);
-		$header[] = "Referer: $referer";
+
+
+		//	Referer
+		if( $referer ){
+			$header[] = "Referer: $referer";
+		}
 
 		//	Check if installed PHP CURL.
 		if(!defined('CURLOPT_URL') ){
