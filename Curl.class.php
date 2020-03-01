@@ -138,7 +138,6 @@ class Curl implements IF_UNIT
 		$format     = $option['format']  ?? null; // Json, Xml
 		$ua         = $option['ua']      ?? null; // Specified User Agent.
 		$referer    = $option['referer'] ?? null; // Specified referer.
-		$cookie     = $option['cookie']  ?? null; // Cookie file path.
 		$has_header = $option['header']  ?? null; // Return request and response headers.
 		$timeout    = $option['timeout'] ??    3; // Timeout second.
 
@@ -154,14 +153,18 @@ class Curl implements IF_UNIT
 			$referer = GetReferer();
 		}
 
-		//	...
+		//	Data serialize.
 		$data = $post ? self::_Data($post, $format): null;
 
-		//	...
+		//	HTTP Header
 		$header = [];
 		$header[] = "Content-Type: {$content_type}";
 		$header[] = "Content-Length: ".strlen($data);
 
+		//	Cookie is direct string.
+		if( $cookie = $option['cookie_string'] ?? null ){
+			$header[] = "Cookie: $cookie";
+		}
 
 		//	Referer
 		if( $referer ){
@@ -196,7 +199,45 @@ class Curl implements IF_UNIT
 		};
 
 		//	...
-		$option = [
+		$curl = curl_init();
+
+		//	...
+		if( $has_header ){
+			curl_setopt($curl, CURLOPT_HEADER, true);
+		};
+
+		//	POST
+		if( $post !== null ){
+			curl_setopt( $curl, CURLOPT_CUSTOMREQUEST , 'POST' );
+			curl_setopt( $curl, CURLOPT_POST          ,  true  );
+			curl_setopt( $curl, CURLOPT_POSTFIELDS    ,  $data );
+		};
+
+		//	SSL
+		if( strpos($url, 'https://') === 0 ){
+			curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true);
+			curl_setopt( $curl, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
+		};
+
+		//	Cookie read/write
+		foreach(['cookie_read' => CURLOPT_COOKIEFILE, 'cookie_write' => CURLOPT_COOKIEJAR] as $key => $var){
+			//	...
+			if(!$path = $option[$key] ?? null ){
+				continue;
+			}
+
+			//	...
+			if(!file_exists($path)){
+				require_once(__DIR__.'/File.class.php');
+				File::Create($path);
+			};
+
+			//	...
+			curl_setopt($curl, $var, $path);
+		}
+
+		//	...
+		$curl_option = [
 			CURLOPT_URL            =>  $url,
 			CURLOPT_HTTPHEADER     =>  $header,
 			CURLOPT_USERAGENT      =>  $ua,
@@ -206,38 +247,7 @@ class Curl implements IF_UNIT
 		];
 
 		//	...
-		$curl = curl_init();
-		curl_setopt_array($curl, $option);
-
-		//	...
-		if( $has_header ){
-			curl_setopt($curl, CURLOPT_HEADER, true);
-		};
-
-		//	...
-		if( $cookie ){
-			//	...
-			if(!file_exists($cookie)){
-				File::Create($cookie);
-			};
-
-			//	...
-			curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie);
-			curl_setopt($curl, CURLOPT_COOKIEJAR,  $cookie);
-		};
-
-		//	...
-		if( $post !== null ){
-			curl_setopt( $curl, CURLOPT_CUSTOMREQUEST , 'POST' );
-			curl_setopt( $curl, CURLOPT_POST          ,  true  );
-			curl_setopt( $curl, CURLOPT_POSTFIELDS    ,  $data );
-		};
-
-		//	...
-		if( strpos($url, 'https://') === 0 ){
-			curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true);
-			curl_setopt( $curl, CURLOPT_CAINFO, __DIR__.'/cacert.pem');
-		};
+		curl_setopt_array($curl, $curl_option);
 
 		//	...
 		if(!$body = curl_exec($curl)){
