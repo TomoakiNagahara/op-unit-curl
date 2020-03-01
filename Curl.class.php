@@ -131,7 +131,7 @@ class Curl implements IF_UNIT
 	static private function _Execute($url, $post, $option=null)
 	{
 		//	...
-		$option = array_merge(\OP\Env::Get('curl') ?? [], $option);
+		$option = array_merge(\OP\Env::Get('curl') ?? [], $option ?? []);
 
 		//	...
 		$format     = $option['format']  ?? null; // Json, Xml
