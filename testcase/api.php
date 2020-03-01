@@ -25,13 +25,20 @@ $curl = Unit::Singleton('Curl');
 $scheme = 'http';
 $host   = $_SERVER['HTTP_HOST'];
 $path   = ConvertURL('app:/api/');
-$url    = "{$scheme}://{$host}{$path}";
+$url    = "{$scheme}://{$host}{$path}?sleep=0";
 
 //	...
-D( json_decode($curl->Get( $url, ['get'=>['user_id','nickname']]), true) );
+$data = [
+	'user_id'  => 1,
+	'nickname' => 'hoge',
+	'sleep'    => 0
+];
 
 //	...
-D( json_decode($curl->Post($url, ['get'=>['user_id','nickname']]), true) );
+D( json_decode($curl->Get( $url, $data), true) );
+
+//	...
+D( json_decode($curl->Post($url, $data), true) );
 
 //	...
 D($curl);
