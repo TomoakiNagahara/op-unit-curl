@@ -19,12 +19,12 @@ namespace OP;
 
 /* @var $app  UNIT\App  */
 /* @var $curl UNIT\Curl */
-$curl = $app->Unit('Curl');
+$curl = Unit::Singleton('Curl');
 
 //	...
 $scheme = 'http';
 $host   = $_SERVER['HTTP_HOST'];
-$path   = $app->URL('app:/api/');
+$path   = ConvertURL('app:/api/');
 $url    = "{$scheme}://{$host}{$path}";
 
 //	...
