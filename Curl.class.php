@@ -349,7 +349,16 @@ class Curl implements IF_UNIT
 	 */
 	static function Get($url, $data=null, $option=null)
 	{
+		//	...
 		if( $data ){
+			//	...
+			if( strpos($url, '?') ){
+				list($url, $query) = explode('?', $url);
+				parse_str($query, $query);
+				$data = array_merge($query, $data);
+			}
+
+			//	...
 			$url .= '?'.http_build_query($data);
 		}
 
