@@ -4,7 +4,7 @@
  *
  * @created   2017-06-01
  * @version   1.0
- * @package   app-skeleton
+ * @package   unit-curl
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -22,13 +22,14 @@ use OP\OP_CORE;
 use OP\OP_UNIT;
 use OP\OP_DEBUG;
 use OP\IF_UNIT;
+use OP\UNIT\CURL\File;
 use function OP\ConvertURL;
 
 /** Curl
  *
  * @created   2017-06-01
  * @version   1.0
- * @package   app-skeleton
+ * @package   unit-curl
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
@@ -214,7 +215,7 @@ class Curl implements IF_UNIT
 		if( $cookie ){
 			//	...
 			if(!file_exists($cookie)){
-				\OP\File::Create($cookie);
+				File::Create($cookie);
 			};
 
 			//	...
