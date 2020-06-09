@@ -87,8 +87,8 @@ class Curl implements IF_UNIT
 						$result[$key] = $val;
 					};
 				};
-			}else if( strpos($header, 'HTTP/1.') === 0 ){
-				$result['status'] = explode(' ', $header)[1];
+			}else if( strpos($header, 'HTTP/') === 0 ){
+				list($result['http'], $result['status']) = explode(' ', $header);
 			}else{
 				$result[] = $header;
 			};
