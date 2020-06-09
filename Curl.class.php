@@ -23,6 +23,7 @@ use OP\OP_DEBUG;
 use OP\IF_UNIT;
 use OP\Config;
 use OP\UNIT\CURL\File;
+use function OP\RootPath;
 use function OP\ConvertURL;
 use function OP\UNIT\CURL\GetReferer;
 /*
@@ -139,6 +140,22 @@ class Curl implements IF_UNIT
 
 		//	...
 		$option = array_merge($config, $option);
+
+		//	...
+		if(!empty($option['cookie']) ){
+			//	...
+			$parsed = parse_url($url);
+
+			//	...
+			$path = RootPath('asset').'cache/cookie/'.$parsed['host'];
+
+			//	...
+			foreach(['cookie_read','cookie_write'] as $key){
+				if( empty($option[$key]) ){
+					$option[$key]  = $path;
+				}
+			}
+		}
 
 		//	...
 		$format     = $option['format']  ?? null; // Json, Xml
