@@ -14,7 +14,7 @@
 namespace OP;
 
 /* @var $app UNIT\App */
-$args = Unit::Singleton('Router')->Args();
+$args = Unit('Router')->Args();
 
 //	...
 include('index.phtml');
@@ -26,17 +26,11 @@ if( $arg = $args[2] ?? null ){
 
 	//	...
 	$file = __DIR__.'/'.$arg.'.php';
+	$file = __DIR__.'/'.$arg.'.php';
+
 
 	//	...
 	if( file_exists($file) ){
 		Unit::Singleton('Template')->__TEMPLATE($file);
 	}
 }
-
-return;
-
-//	...
-$curl = Unit::Instantiate('Curl');
-
-//	...
-$curl->Post();

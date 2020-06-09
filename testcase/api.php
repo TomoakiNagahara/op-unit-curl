@@ -18,7 +18,7 @@ namespace OP;
 
 /* @var $app  UNIT\App  */
 /* @var $curl UNIT\Curl */
-$curl = Unit::Singleton('Curl');
+$curl = Unit('Curl');
 
 //	...
 $scheme = 'http';
