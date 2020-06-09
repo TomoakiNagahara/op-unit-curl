@@ -33,11 +33,6 @@ use function OP\UNIT\CURL\GetCookieFilePath;
 
 /** Curl
  *
- * @created   2017-06-01
- * @version   1.0
- * @package   unit-curl
- * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
- * @copyright Tomoaki Nagahara All right reserved.
  */
 class Curl implements IF_UNIT
 {
@@ -307,7 +302,6 @@ class Curl implements IF_UNIT
 
 	/** Separate error routine.
 	 *
-	 * @created  2019-08-22
 	 * @param    integer     $error   is Curl error code
 	 * @param    integer     $info    is Curl transfer information
 	 * @param    string      $url     is fetch URL
