@@ -1,10 +1,9 @@
 <?php
-/**
- * unit-curl:/Curl.class.php
+/** op-unit-curl:/Curl.class.php
  *
  * @created   2017-06-01
  * @version   1.0
- * @package   unit-curl
+ * @package   op-unit-curl
  * @author    Tomoaki Nagahara <tomoaki.nagahara@gmail.com>
  * @copyright Tomoaki Nagahara All right reserved.
  */
