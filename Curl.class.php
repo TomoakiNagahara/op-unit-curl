@@ -261,13 +261,13 @@ class Curl implements IF_UNIT
 
 		//	...
 		if(!$body = curl_exec($curl)){
-			$body = curl_getinfo($curl);
-		};
+			$info = curl_getinfo($curl);
 
-		//	...
-		if( $errno = curl_errno($curl) ){
-		//	curl_getinfo($curl)
-			self::$_errors[] = sprintf('%s: %s, %s', $errno, $url, $timeout);
+			//	...
+			if( $errno = curl_errno($curl) ){
+				$error = sprintf('Error(%s): %s', $errno, $url);
+				self::$_errors[] = $error;
+			};
 		};
 
 		//	Return ['head','body'] array.
@@ -275,6 +275,8 @@ class Curl implements IF_UNIT
 			$body = curl_exec($curl);
 			$size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
 			return [
+					'errno'=> $errno ?? null,
+					'info' => $info  ?? null,
 					'head' => self::_Header(
 					          substr($body, 0, $size) ),
 					'body' => substr($body,    $size),
