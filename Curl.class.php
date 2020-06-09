@@ -21,6 +21,7 @@ use OP\OP_CORE;
 use OP\OP_UNIT;
 use OP\OP_DEBUG;
 use OP\IF_UNIT;
+use OP\Config;
 use OP\UNIT\CURL\File;
 use function OP\ConvertURL;
 use function OP\UNIT\CURL\GetReferer;
@@ -131,17 +132,24 @@ class Curl implements IF_UNIT
 	 * @param  array   $option
 	 * @return string  $body
 	 */
-	static private function _Execute($url, $post, $option=null)
+	static private function _Execute($url, $post, $option=[])
 	{
 		//	...
-		$option = array_merge(\OP\Env::Get('curl') ?? [], $option ?? []);
+		$config = Config::Get('curl');
+
+		//	...
+		$option = array_merge($config, $option);
 
 		//	...
 		$format     = $option['format']  ?? null; // Json, Xml
-		$ua         = $option['ua']      ?? null; // Specified User Agent.
 		$referer    = $option['referer'] ?? null; // Specified referer.
 		$has_header = $option['header']  ?? null; // Return request and response headers.
-		$timeout    = $option['timeout'] ??    3; // Timeout second.
+
+		// Timeout second.
+		$timeout    = $option['timeout'] ?? $config['ua'] ??   10;
+
+		// Specified User Agent.
+		$ua         = $option['ua']      ?? $config['ua'] ?? null;
 
 		//	Content Type
 		switch( $format ){
@@ -362,7 +370,7 @@ class Curl implements IF_UNIT
 	 * @param  string $option
 	 * @return string $body
 	 */
-	static function Get($url, $data=null, $option=null)
+	static function Get($url, $data=null, $option=[])
 	{
 		//	...
 		if( $data ){
